@@ -8003,7 +8003,7 @@ export default function (context, pluginCallButtons, plugins, lang, options, _re
             const dataTransfer = e.dataTransfer;
             if (!dataTransfer) return true;
 
-            core.removeNode();
+            // core.removeNode();
             event._setDropLocationSelection(e);
             return event._dataTransferAction('drop', e, dataTransfer);
         },
