@@ -16,12 +16,12 @@
     "test": "karma start"
   },
   "bugs": {
-    "url": "https://github.com/JiHong88/SunEditor/issues"
+    "url": "https://github.com/alogic-git/suneditor-alogic/issues"
   },
   "homepage": "http://suneditor.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JiHong88/SunEditor.git"
+    "url": "https://github.com/alogic-git/suneditor-alogic.git"
   },
   "ignore": [
     "**/.*",
