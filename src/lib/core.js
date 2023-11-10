@@ -8004,6 +8004,7 @@ export default function (context, pluginCallButtons, plugins, lang, options, _re
             if (!dataTransfer) return true;
 
             // core.removeNode();
+	    console.log("testtt")
             event._setDropLocationSelection(e);
             return event._dataTransferAction('drop', e, dataTransfer);
         },
