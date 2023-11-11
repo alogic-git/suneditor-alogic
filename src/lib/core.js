@@ -2142,9 +2142,17 @@ export default function (context, pluginCallButtons, plugins, lang, options, _re
             let startPrevEl = null;
             let endNextEl = null;
             if (isStartEdge) {
+                //startPrevEl = util.getFormatElement(range.startContainer);
+                //prevContainer = startPrevEl.previousElementSibling;
+                //startPrevEl = startPrevEl ? prevContainer : startPrevEl;
                 startPrevEl = util.getFormatElement(range.startContainer);
-                prevContainer = startPrevEl.previousElementSibling;
-                startPrevEl = startPrevEl ? prevContainer : startPrevEl;
+                if(startPrevEl && startPrevEl.previousElementSibling && util.isBreak(startPrevEl.previousElementSibling)) {
+                    startPrevEl = startPrevEl.previousElementSibling;
+                    console.log(startPrevEl);
+                }else {
+                    console.log(startPrevEl);
+                    return;
+                }
             }
             if (isEndEdge) {
                 endNextEl = util.getFormatElement(range.endContainer);
@@ -8003,8 +8011,7 @@ export default function (context, pluginCallButtons, plugins, lang, options, _re
             const dataTransfer = e.dataTransfer;
             if (!dataTransfer) return true;
 
-            // core.removeNode();
-	    console.log("testtt")
+            core.removeNode();
             event._setDropLocationSelection(e);
             return event._dataTransferAction('drop', e, dataTransfer);
         },
