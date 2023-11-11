@@ -130,6 +130,7 @@ export interface Lang {
     tableHeader: string;
     mergeCells: string;
     splitCells: string;
+    copyToClipboard: string
     HorizontalSplit: string;
     VerticalSplit: string
   };

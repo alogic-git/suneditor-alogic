@@ -153,6 +153,7 @@
             tableHeader: 'Table header',
             mergeCells: 'Merge cells',
             splitCells: 'Split Cells',
+            copyToClipboard: 'Copy to clipboard',
             HorizontalSplit: 'Horizontal split',
             VerticalSplit: 'Vertical split'
         },

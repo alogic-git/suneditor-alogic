@@ -68,6 +68,9 @@ export default {
         contextTable.splitButton = resizeDiv.querySelector('._se_table_split_button');
         contextTable.insertRowAboveButton = resizeDiv.querySelector('._se_table_insert_row_a');
         contextTable.insertRowBelowButton = resizeDiv.querySelector('._se_table_insert_row_b');
+
+        /** set copy to clipboard */
+        contextTable.copyToClipboard = resizeDiv.querySelector('._se_table_copytoclipboard_button');
         
         /** add event listeners */
         tablePicker.addEventListener('mousemove', this.onMouseMove_tablePicker.bind(core, contextTable));
@@ -154,6 +157,10 @@ export default {
                 '<button type="button" data-command="merge" class="_se_table_merge_button se-btn se-tooltip" disabled>' +
                     icons.merge_cell +
                     '<span class="se-tooltip-inner"><span class="se-tooltip-text">' + lang.controller.mergeCells + '</span></span>' +
+                '</button>' +
+                '<button type="button" data-command="copyToClipboard" class="_se_table_copytoclipboard_button se-btn se-tooltip">' +
+                    icons.copy_to_clipboard +
+                    '<span class="se-tooltip-inner"><span class="se-tooltip-text">' + lang.controller.copyToClipboard + '</span></span>' +
                 '</button>' +
             '</div>' +
             '<div class="se-btn-group" style="padding-top: 0;">' +
@@ -1044,6 +1051,57 @@ export default {
         this.focusEdge(mergeCell);
     },
 
+    copyToClipboard: function () {
+        const tablePlugin = this.plugins.table;
+        const ref = tablePlugin._ref;
+        const table = tablePlugin._selectedTable;
+        let tableHtml = '<table style="background-color:transparent;border-collapse:collapse;">';
+        for (let row = ref.rs; row <= ref.re; row++) {
+            tableHtml += '<tr>';
+            for (let col = ref.cs; col <= ref.ce; col++) {
+                let cell = table.rows[row].cells[col];
+
+                // 병합된 셀 처리
+                if (cell && !cell.hasAttribute('data-processed')) {
+                    let rowSpan = cell.rowSpan > 1 ? ` rowspan="${cell.rowSpan}"` : '';
+                    let colSpan = cell.colSpan > 1 ? ` colspan="${cell.colSpan}"` : '';
+                    tableHtml += `<td style="text-align:center;border:1px solid #ccc" ${rowSpan}${colSpan}>${cell.innerText}</td>`;
+
+                    // 처리된 셀 표시
+                    cell.setAttribute('data-processed', 'true');
+                }
+            }
+            tableHtml += '</tr>';
+        }
+        
+        // 처리 표시 초기화
+        const processedCells = table.querySelectorAll('[data-processed="true"]');
+        processedCells.forEach(cell => cell.removeAttribute('data-processed'));
+
+        tableHtml += '</table>';
+
+
+        const tempElem = document.createElement('div');
+        tempElem.style.position = 'absolute';
+        tempElem.style.left = '-9999px';
+        tempElem.innerHTML = tableHtml;
+        document.body.appendChild(tempElem);
+
+        if (document.selection) {
+            const range = document.body.createTextRange();
+            range.moveToElementText(tempElem);
+            range.select();
+        } else if (window.getSelection) {
+            const range = document.createRange();
+            range.selectNode(tempElem);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+        }
+
+        document.execCommand('copy');
+        document.body.removeChild(tempElem);
+    },
+
     toggleHeader: function () {
         const util = this.util;
         const headerButton = this.context.table.headerButton;
@@ -1403,6 +1461,9 @@ export default {
                 break;
             case 'merge':
                 tablePlugin.mergeCells.call(this);
+                break;
+            case 'copyToClipboard':
+                tablePlugin.copyToClipboard.call(this);
                 break;
             case 'resize':
                 contextTable._maxWidth = !contextTable._maxWidth;
