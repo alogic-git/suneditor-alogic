@@ -2142,16 +2142,18 @@ export default function (context, pluginCallButtons, plugins, lang, options, _re
             let startPrevEl = null;
             let endNextEl = null;
             if (isStartEdge) {
-                //startPrevEl = util.getFormatElement(range.startContainer);
-                //prevContainer = startPrevEl.previousElementSibling;
-                //startPrevEl = startPrevEl ? prevContainer : startPrevEl;
                 startPrevEl = util.getFormatElement(range.startContainer);
-                if(startPrevEl && startPrevEl.previousElementSibling && util.isBreak(startPrevEl.previousElementSibling)) {
-                    startPrevEl = startPrevEl.previousElementSibling;
-                    console.log(startPrevEl);
-                }else {
-                    console.log(startPrevEl);
-                    return;
+                //prevContainer = startPrevEl.previousElementSibling;
+
+                if(startPrevEl == null ) {
+                    prevContainer = range.startContainer.previousElementSibling;
+                    return {
+                        container: range.startContainer,
+                        offset: 0,
+                        prevContainer: prevContainer
+                    }
+                } else {
+                    prevContainer = startPrevEl.previousElementSibling;
                 }
             }
             if (isEndEdge) {

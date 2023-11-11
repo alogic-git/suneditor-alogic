@@ -1067,7 +1067,7 @@ window.sun_setOptions2 = () => {
 // }
 
  s2.onChange = (content) => {
-    console.log(content)
+    //console.log(content)
  }
 
 s2.onClick = (event, core) => {
