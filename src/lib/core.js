@@ -855,6 +855,14 @@ export default function (context, pluginCallButtons, plugins, lang, options, _re
          * @param {KeyboardEvent|MouseEvent|null} e Event object when called from mousedown and keydown events registered in "core.controllersOn"
          */
         controllersOff: function (e) {
+            if (e && e.ctrlKey) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.removeDocEvent('mousedown', this._bindControllersOff);
+                this.removeDocEvent('keydown', this._bindControllersOff);
+                return;
+            };
+
             this._lineBreaker.style.display = 'none';
             const len = this.controllerArray.length;
 

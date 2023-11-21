@@ -77,6 +77,9 @@ export default {
         tablePicker.addEventListener('click', this.appendTable.bind(core));
         resizeDiv.addEventListener('click', this.onClick_tableController.bind(core));
         tableController.addEventListener('click', this.onClick_tableController.bind(core));
+        
+        //keydown event listner for documnet
+        core.addDocEvent('keydown', this.onCopyCell.bind(core));
 
         /** append target button menu */
         core.initMenuTarget(this.name, targetElement, listDiv);
@@ -232,6 +235,21 @@ export default {
             const cell = this.util.createElement(nodeName);
             cell.innerHTML = '<div><br></div>';
             return cell;
+        }
+    },
+
+    onCopyCell: function (e) {
+        const tablePlugin = this.plugins.table;
+        //ctrl + c
+        if (e.keyCode === 67 && e.ctrlKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            tablePlugin.copyToClipboard.call(this);
+            
+            //keydown event listner for documnet
+            this.removeDocEvent('keydown', tablePlugin.onCopyCell.bind(this));
+
+            return;
         }
     },
 
@@ -1082,24 +1100,33 @@ export default {
 
 
         const tempElem = document.createElement('div');
+        tempElem.setAttribute('id', `temp_${new Date().getTime()}`);
         tempElem.style.position = 'absolute';
         tempElem.style.left = '-9999px';
         tempElem.innerHTML = tableHtml;
         document.body.appendChild(tempElem);
 
-        if (document.selection) {
-            const range = document.body.createTextRange();
-            range.moveToElementText(tempElem);
-            range.select();
-        } else if (window.getSelection) {
+        let originalRange = null;
+        if (window.getSelection) {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                originalRange = selection.getRangeAt(0); // 원래 선택을 저장
+            }
+
             const range = document.createRange();
             range.selectNode(tempElem);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
+            selection.removeAllRanges();
+            selection.addRange(range);
         }
 
         document.execCommand('copy');
-        document.body.removeChild(tempElem);
+        tempElem.remove();
+        // 원래 선택 상태 복원
+        if (originalRange) {
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(originalRange);
+        }
     },
 
     toggleHeader: function () {
